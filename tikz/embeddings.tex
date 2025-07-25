@@ -1,0 +1,28 @@
+\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+        % Input Objects
+        \node[draw, rectangle, rounded corners, fill=blue!10] (obj1) at (0, 2) {Token 1};
+        \node[draw, rectangle, rounded corners, fill=blue!10] (obj2) at (0, 0) {Token 2};
+        \node[draw, rectangle, rounded corners, fill=blue!10] (obj3) at (0, -2) {Token 3};
+
+        % Embedding Model
+        \node[draw, diamond, aspect=2, fill=purple!10, minimum width=4cm, minimum height=4cm] (embed) at (4, 0) {Embedding Model};
+
+        % Embedding Vectors
+        \node[draw, rectangle, rounded corners, fill=purple!5] (vec1) at (9, 2) {[0.12, 0.75, -0.33 ...]};
+        \node[draw, rectangle, rounded corners, fill=purple!5] (vec2) at (9, 0) {[0.85, 0.21, 0.88 ...]};
+        \node[draw, rectangle, rounded corners, fill=purple!5] (vec3) at (9, -2) {[-0.05, 0.68, 0.5 ...]};
+
+        % Vector labels
+        \node[fill=gray!20] at (12, 2) {Vector 1};
+        \node[fill=gray!20] at (12, 0) {Vector 2};
+        \node[fill=gray!20] at (12, -2) {Vector 3};
+
+        % Arrows
+        \draw[->, thick] (obj1) -- (embed);
+        \draw[->, thick] (obj2) -- (embed);
+        \draw[->, thick] (obj3) -- (embed);
+
+        \draw[->, thick] (embed) -- (vec1);
+        \draw[->, thick] (embed) -- (vec2);
+        \draw[->, thick] (embed) -- (vec3);
+\end{tikzpicture}

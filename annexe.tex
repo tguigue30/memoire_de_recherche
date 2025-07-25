@@ -1,0 +1,158 @@
+\appendix
+\pagestyle{plain} % ou empty si tu ne veux ni en-tête ni pied de page
+\chapter*{Annexe}
+\addcontentsline{toc}{chapter}{Annexes}
+\label{sec-annexe}
+
+\begin{preuve}[Formule du gradient d’un MLP avec rétropropagation]
+
+Considéranr une fonction de coût \( \mathcal{L}(f(x;\theta), y) \), avec \( f \) une composition de couches \( f = f_L \circ f_{L-1} \circ \dots \circ f_1 \). Il est utilisé la règle de la chaîne :
+
+\[
+\frac{\partial \mathcal{L}}{\partial \theta^{(\ell)}} = \frac{\partial \mathcal{L}}{\partial f} \cdot \prod_{k=\ell+1}^{L} \frac{\partial f_k}{\partial f_{k-1}} \cdot \frac{\partial f_\ell}{\partial \theta^{(\ell)}}
+\]
+
+Le terme \( \displaystyle \frac{\partial f_k}{\partial f_{k-1}} \) est exactement la dérivée de l’activation de la couche \( k \), et \( \displaystyle \frac{\partial f_\ell}{\partial \theta^{(\ell)}} \) donne le gradient local. Cela justifie que les gradients peuvent être calculés de façon récursive en partant de la couche de sortie vers les couches d’entrée (backward pass).
+\end{preuve}
+
+
+\begin{preuve}[Taux de convergence de la descente de gradient dans le cas convexe]
+
+Soit \( f \) une fonction convexe à gradient \( L \)-Lipschitz. Pour un pas \( \lambda \in (0, 1/L) \), la descente de gradient vérifie :
+
+\[
+f(w_t) - f(w^*) \leq \frac{1}{2\lambda t} \|w_0 - w^*\|^2.
+\]
+
+La preuve repose sur le développement de Taylor de \( f \), l’inégalité de convexité :
+
+\[
+f(w_{t+1}) \leq f(w_t) + \nabla f(w_t)^\top (w_{t+1} - w_t) + \frac{L}{2} \|w_{t+1} - w_t\|^2,
+\]
+
+et la mise en évidence d’une décroissance du résidu quadratique. La convergence est donc sublinéaire en \( O(1/t) \).
+\end{preuve}
+
+
+\begin{preuve}[Le LSTM atténue le problème du gradient évanescent]
+Considérant la dynamique interne de la mémoire dans une cellule LSTM :
+
+\[
+c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t
+\]
+
+où $f_t = \sigma(W_f x_t + U_f h_{t-1} + b_f)$ est la porte d’oubli, $i_t$ la porte d’entrée, et $\tilde{c}_t$ le contenu candidat. Par récurrence, il est possible d'écrire :
+
+\[
+c_t = \left( \prod_{k=1}^t f_k \right) \odot c_0 + \sum_{j=1}^t \left( \left( \prod_{k=j+1}^{t} f_k \right) \odot i_j \odot \tilde{c}_j \right)
+\]
+
+En dérivant $c_t$ par rapport à $c_{t-k}$, il est obtenu :
+
+\[
+\frac{\partial c_t}{\partial c_{t-k}} = \prod_{j=1}^{k} \text{diag}(f_{t-j+1})
+\]
+
+où $\text{diag}(f_{t-j+1})$ est une matrice diagonale avec les composantes de $f_{t-j+1}$ sur la diagonale.\\
+
+Ainsi, si $f_t \approx \mathbf{1}$ (vecteur de 1), alors :
+
+\[
+\frac{\partial c_t}{\partial c_{t-k}} \approx \mathbf{I}
+\quad \text{(identité)},
+\]
+
+et donc le gradient à travers le temps ne s’atténue pas. C’est ce qui distingue les LSTM des RNN classiques : la dynamique multiplicative des portes permet de préserver le flux du gradient sur de longues séquences. Inversement, dans un RNN classique avec état $h_t = \tanh(W x_t + U h_{t-1})$, il y a :
+
+\[
+\frac{\partial h_t}{\partial h_{t-k}} = \prod_{j=1}^{k} \tanh'(a_{t-j}) U,
+\]
+
+ce produit pouvant rapidement tendre vers 0 (gradient évanescent) ou diverger (explosion) selon les valeurs spectrales de $U$ et les activations.\\
+
+Ainsi, les LSTM permettent, par construction, de contrôler dynamiquement le passage du gradient à travers le temps en adaptant la valeur des portes $f_t$, ce qui explique leur performance dans l’apprentissage de dépendances à long terme.
+\end{preuve}
+
+\begin{preuve}[Lien fondamental entre WAE et transport optimal]
+Soit \( P_X \) la distribution des données réelles, et \( Q(Z|X) \) un encodeur stochastique. Celui-ci induit une distribution agrégée sur l’espace latent :
+\[
+Q_Z(z) = \int Q(z|x) \, dP_X(x).
+\]
+
+On note $G(z)$ le décodeur générant des échantillons dans l’espace des données. Le couplage induit par la chaîne :
+
+\[
+x \sim P_X, \quad z \sim Q(z|x), \quad \hat{x} = G(z)
+\]
+
+définit une mesure jointe $\tilde{\gamma}(x, \hat{x})$ entre $P_X$ et une distribution générée $Q_G = G_\# Q_Z$. La distance de Wasserstein d’ordre 2 entre $P_X$ et $P_G$ vérifie :
+
+\[
+W_2^2(P_X, P_G) = \inf_{\gamma \in \Pi(P_X, P_G)} \mathbb{E}_{(x,\hat{x}) \sim \gamma} \left[ \| x - \hat{x} \|^2 \right],
+\]
+
+où $\Pi(P_X, P_G)$ est l'ensemble des couplages de marges $P_X$ et $P_G$.\\
+
+Le plan de transport défini par la composition ci-dessus n’est pas optimal en général, mais fournit une borne supérieure :
+
+\[
+W_2^2(P_X, P_G) \leq \mathbb{E}_{x \sim P_X} \mathbb{E}_{z \sim Q(z|x)} \left[ \| x - G(z) \|^2 \right].
+\]
+
+De plus, si l’on impose $Q_Z \approx P_Z$, alors $Q_G \approx P_G$, ce qui permet d’approcher indirectement $P_G$ par $Q_G$ dans la borne précédente.\\
+
+Ainsi, l’objectif du WAE s’interprète comme la minimisation de :
+
+\[
+\mathcal{L}_{\text{WAE}} = \mathbb{E}_{x \sim P_X} \mathbb{E}_{z \sim Q(z|x)} \left[ \| x - G(z) \|^2 \right] + \lambda D(Q_Z, P_Z),
+\]
+
+où $D$ est une divergence entre la loi agrégée des latents $Q_Z$ et le prior $P_Z$ (typiquement une distance de Wasserstein régularisée ou une MMD).\\
+
+Il en est déduit que :
+
+\[
+W_2^2(P_X, P_G) \leq \mathcal{L}_{\text{WAE}} \quad \text{(pour $\lambda$ bien choisi)},
+\]
+
+ce qui justifie que le WAE fournit une relaxation du transport optimal sur $P_X$ et $P_G$, en le reformulant comme un transport plus simple dans l’espace latent.
+\end{preuve}
+
+\begin{preuve}[Justification du lien entre minimisation de la distance Wasserstein et régularisation de l’espace latent]
+Soit \( P_X \) la distribution des données réelles, et \( Q(Z|X) \) un encodeur qui induit une distribution \( Q_Z \) sur l’espace latent via la composition \( X \sim P_X \Rightarrow Z \sim Q(Z|X) \). Soit \( P_G \) la distribution générée par un décodeur \( G(Z) \), où \( Z \sim P_Z \) (prior).
+
+L’objectif du WAE est de minimiser une distance \( D(P_X, P_G) \), où \( P_G = G_{\#}Q_Z \) est la loi image de \( Q_Z \) par \( G \). La distance Wasserstein s’écrit :
+\[
+W_2^2(P_X, P_G) = \inf_{\gamma \in \Pi(P_X, P_G)} \mathbb{E}_{(x,\hat{x}) \sim \gamma} \left[ \| x - \hat{x} \|^2 \right],
+\]
+où \( \Pi(P_X, P_G) \) est l’ensemble des couplages à marges données.
+
+Sous l’hypothèse que le modèle est « autoencodeur », i.e., que pour chaque \( x \), l’échantillon généré est \( \hat{x} = G(z) \) avec \( z \sim Q(Z|x) \), alors \( \gamma \) est déterminée par la composition suivante :
+\[
+x \sim P_X, \quad z \sim Q(Z|x), \quad \hat{x} = G(z).
+\]
+
+Ce couplage induit une distribution jointe \( \tilde{\gamma}(x,\hat{x}) \), et l’espérance devient :
+
+\[
+\mathbb{E}_{x \sim P_X} \mathbb{E}_{z \sim Q(Z|x)} \left[ \| x - G(z) \|^2 \right].
+\]
+
+Autrement dit, la distance de Wasserstein entre \( P_X \) et \( P_G \) est minimisée en minimisant une perte de reconstruction et en s’assurant que \( Q_Z \approx P_Z \), puisque \( P_G = G_{\#}P_Z \) et \( Q_G = G_{\#}Q_Z \).\\
+
+Ainsi, l’approximation suivante est justifiée :
+
+\[
+W_2^2(P_X, P_G) \leq \mathbb{E}_{x \sim P_X} \mathbb{E}_{z \sim Q(Z|x)} \left[ \| x - G(z) \|^2 \right] + \lambda \cdot D(Q_Z, P_Z),
+\]
+
+où \( D \) est une divergence entre distributions latentes (souvent une Wasserstein régularisée ou une MMD), et \( \lambda > 0 \) un facteur de pondération. Cette inégalité justifie l'objectif du WAE :
+
+\[
+\mathcal{L}_{\text{WAE}} = \underbrace{\mathbb{E}_{x \sim P_X} \mathbb{E}_{z \sim Q(Z|x)} \left[ \| x - G(z) \|^2 \right]}_{\text{coût de reconstruction}} + \lambda \cdot D(Q_Z, P_Z),
+\]
+
+ce qui réalise une relaxation pratique du transport optimal sur les distributions de données vers un transport dans l’espace latent, plus maniable numériquement.
+\end{preuve}
+
+

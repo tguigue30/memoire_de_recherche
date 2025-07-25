@@ -1,0 +1,39 @@
+\begin{tikzpicture}[>=latex, thick, scale=1, every node/.style={scale=1}]
+
+  % Entrées
+  \node[draw, circle, fill=green!20!black,draw=mygreen!30!black,fill=mygreen!25] (x1) at (-2,3) {$x_1$};
+  \node[draw, circle, fill=green!20!black,draw=mygreen!30!black,fill=mygreen!25] (x2) at (-2,1) {$x_2$};
+  \node[draw, circle, fill=green!20!black,draw=mygreen!30!black,fill=mygreen!25] (x3) at (-2,-1) {$x_3$};
+
+  % Sommeur
+  \node[draw, circle, minimum size=1cm] (sum) at (2,1) {$\displaystyle\sum$};
+
+  % Biais
+  \node[draw, circle, minimum size=24pt] (bias) at (2.02,4.90) {};
+  \node at (2.02,4.90) {$b^{(2)}_1$};
+  \draw[->] (bias) -- (sum);
+
+  % Flèches entrantes avec poids
+  \draw[->] (x1) -- (sum) node[pos=0.2, yshift=11pt] {$\omega^{(2)}_{1,1}$};
+  \draw[->] (x2) -- (sum) node[pos=0.2, yshift=10pt] {$\omega^{(2)}_{1,2}$};
+  \draw[->] (x3) -- (sum) node[pos=0.2, yshift=13pt] {$\omega^{(2)}_{1,3}$};
+
+  % Activation
+  \node[draw, rectangle, minimum width=0.6cm, minimum height=0.6cm] (g) at (4.5,1) {$\sigma$};
+  \node at (4.5,1.7) {Activation};
+
+  \draw[->] (sum) -- (g);
+
+  % Sorties
+  \node[draw, circle, fill=red!40] (y1) at (8.5,2) {$\hat{y}_1$};
+  \node[draw, circle, fill=red!40] (y2) at (8.5,0) {$\hat{y}_2$};
+
+  \draw[->] (g) -- (y1) node[pos=0.7, yshift=12pt] {$\omega^{(3)}_{1,1}$};
+  \draw[->] (g) -- (y2) node[pos=0.7, yshift=12pt] {$\omega^{(3)}_{2,1}$};
+
+  % Cercle autour du neurone (niveau)
+  % Cercle de highlight D'ABORD (au fond)
+  \fill[blue!30, opacity=0.2] (3,1) circle [x radius=3cm, y radius=3cm];
+  \draw[blue!60, thick] (3,1) circle [x radius=3cm, y radius=3cm];
+
+\end{tikzpicture}

@@ -1,0 +1,182 @@
+\documentclass{rapportENSIAS}
+\usepackage{lipsum}
+\usepackage{minted}
+\usepackage{setspace}
+\definecolor{bg}{rgb}{0.95,0.95,0.95} % Adjust the RGB values as needed
+
+\usepackage{titlesec} % For customizing chapter and section titles
+\usepackage{tocloft} % For customizing the table of contents
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage[authoryear]{natbib}  % Active le format auteur-année
+\bibliographystyle{apalike} 
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage{ragged2e}
+\usepackage{shorttoc}
+\usepackage{etoc}
+\usepackage{tocloft} 
+\usepackage{pifont}
+\usepackage{changepage} % pour adjustwidth
+\usepackage{minitoc}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta} % for arrow size
+\usepackage[outline]{contour} % glow around text
+\contourlength{1.4pt}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+\usepackage{cleveref}
+\renewcommand{\algorithmiccomment}[1]{\hfill$\triangleright$ #1}
+
+
+\renewcommand{\cftsubsubsecfont}{\itshape}          % texte des sections en 
+
+% Affichage dans la table des matières : "Chapitre 1"
+\renewcommand{\cftchappresnum}{Chapitre~}
+\renewcommand{\cftchapaftersnum}{\hspace{1em}}  % espace explicite
+
+% Réserve suffisamment de place pour "Chapitre 10"
+\setlength{\cftchapnumwidth}{6em}
+
+\addto\captionsfrench{\renewcommand{\chaptername}{Chapitre}}
+
+
+\def\frenchcontentsname{Sommaire}
+\renewcommand{\mtctitle}{Sommaire du chapitre}
+
+\addto\captionsfrench{%
+  \renewcommand{\contentsname}{Table des matières}%
+  \renewcommand{\listtablename}{Liste des tableaux}%
+  \renewcommand{\listfigurename}{Liste des figures}%
+}
+
+% Définition de styles d'environnement
+\theoremstyle{plain}
+\newtheorem{theorem}{Théorème}[chapter] % ou [chapter] selon ton style
+
+\theoremstyle{plain}
+\newtheorem{definition}{Définition}[chapter]
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}[chapter]
+
+\theoremstyle{demonstration}
+\newtheorem{demonstration}{Démonstration}[chapter]
+
+\theoremstyle{demonstration}
+\newtheorem{preuve}{Preuve}[chapter]
+
+% COLORS
+\usepackage{xcolor}
+\colorlet{myred}{red!80!black}
+\colorlet{myblue}{blue!80!black}
+\colorlet{mygreen}{green!60!black}
+\colorlet{myorange}{orange!70!red!60!black}
+\colorlet{mydarkred}{red!30!black}
+\colorlet{mydarkblue}{blue!40!black}
+\colorlet{mydarkgreen}{green!30!black}
+
+% STYLES
+\tikzset{
+  >=latex, % for default LaTeX arrow head
+  node/.style={thick,circle,draw=myblue,minimum size=22,inner sep=0.5,outer sep=0.6},
+  node in/.style={node,green!20!black,draw=mygreen!30!black,fill=mygreen!25},
+  node hidden/.style={node,blue!20!black,draw=myblue!30!black,fill=myblue!20},
+  node convol/.style={node,orange!20!black,draw=myorange!30!black,fill=myorange!20},
+  node out/.style={node,red!20!black,draw=myred!30!black,fill=myred!20},
+  connect/.style={thick,mydarkblue}, %,line cap=round
+  connect arrow/.style={-{Latex[length=4,width=3.5]},thick,mydarkblue,shorten <=0.5,shorten >=1},
+  node 1/.style={node in}, % node styles, numbered for easy mapping with \nstyle
+  node 2/.style={node hidden},
+  node 3/.style={node out}
+}
+%\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):3)} % map layer number onto 1, 2, or 3
+
+\setlength{\parindent}{0pt}
+
+\title{Rapport ENSIAS - Template} %Titre du fichier
+
+\dominitoc
+\begin{document}
+\setcounter{secnumdepth}{3}    % Permet de numéroter jusqu'à \paragraph
+\setcounter{tocdepth}{3} % Ajuste la profondeur de la table des matières (3 = subsubsection)
+
+
+%----------- Informations du rapport ---------
+
+\titre{Méthodes d'apprentissage profond pour évaluer l'impact de la politique monétaire par la forward guidance sur le stress systémique européen.} %Titre du fichier .pdf
+%\UE{UE PRO} %Nom de la UE
+\sujet{Mémoire de recherche} %Nom du sujet
+
+\enseignant{Françoise \textsc{Seyte} \\ Roman \textsc{Mestre}} %Nom de l'enseignant
+
+\eleves{Théo \textsc{Guigue} \\
+        } %Nom des élèves
+
+\jury{ Roman \textsc{Mestre}\\ 
+       Françoise \textsc{Seyte}\\ 
+    }
+
+%----------- Initialisation -------------------
+        
+\fairemarges %Afficher les marges
+
+\begin{spacing}{1.5}
+
+\clearpage
+\pagestyle{empty} % aucune en-tête ou pied de page
+\includepdf[pages=-, pagecommand={}]{page de garde memoire de recherche ARB.pdf}
+
+\newpage
+
+\clearpage
+\pagestyle{plain}
+
+\vspace*{0.4\textheight}
+
+\noindent \enquote{\itshape "Le problème central de la prévention des dépressions économiques a été résolu, en pratique, pour de nombreuses décennies."}\bigbreak
+
+\hfill Robert Lucas (prix Nobel d'économie 1995), \textit{Discours présidentiel à l'American Economic Association}, 2003.
+
+\newpage
+
+\include{Chapters/remerciement}
+\include{Chapters/resume}
+
+\shorttoc{Sommaire}{0}\addcontentsline{toc}{chapter}{Sommaire}
+
+%------------ Corps du rapport ----------------
+\include{Chapters/introduction}
+\include{Chapters/chapter1}
+\include{Chapters/chapter2}
+\include{Chapters/chapter3}
+\include{Chapters/conclusion}
+
+%------------ Liste of listings----------------
+
+\newpage
+\end{spacing}
+
+\include{annexe}
+
+\newpage
+\listoffigures
+\addcontentsline{toc}{chapter}{Liste des figures}
+
+\newpage
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+
+\newpage
+\bibliography{refs}
+\addcontentsline{toc}{chapter}{Bibliographie}
+\label{sec-bibliographie}
+
+% Table des matières complète à la fin
+\clearpage
+\etocsetnexttocdepth{3} % Inclut les sous-sous-sections
+\etocarticlestyle
+\addcontentsline{toc}{chapter}{Table des matières}
+\tableofcontents
+
+\end{document}
